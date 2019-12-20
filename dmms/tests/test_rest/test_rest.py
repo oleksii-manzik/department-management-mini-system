@@ -1,9 +1,9 @@
 import unittest
 from flask import url_for
 
-from rest.app import app
-from service.db import db
-from models.model import DepartmentsModel, EmployeesModel
+from dmms.rest.app import app
+from dmms.service.db import db
+from dmms.models.model import DepartmentsModel, EmployeesModel
 
 
 class DepartmentsRestTest(unittest.TestCase):

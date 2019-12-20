@@ -1,4 +1,4 @@
-from service.db import db
+from dmms.service.db import db
 
 
 class DepartmentsModel(db.Model):

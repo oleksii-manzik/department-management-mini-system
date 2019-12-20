@@ -1,17 +1,18 @@
 from flask_restful import Resource, marshal_with
-
-from models.model import DepartmentsModel, EmployeesModel
 from sqlalchemy.exc import IntegrityError
-from service.db import db
-from service.fields_structure import departments_structure, employees_structure
-from service.parsers import (department_get_parser, department_post_parser,
-                             department_put_parser, employee_get_parser,
-                             employee_post_parser, employee_put_parser)
-from service.fields_check_utils import (all_parameters_is_filled,
-                                        item_exists,
-                                        value_is_positive,
-                                        any_parameter_is_filled,
-                                        value_provided, not_wrong_url)
+
+from dmms.models.model import DepartmentsModel, EmployeesModel
+from dmms.service.db import db
+from dmms.service.fields_structure import (departments_structure,
+                                           employees_structure)
+from dmms.service.parsers import (department_get_parser,
+                                  department_post_parser,
+                                  department_put_parser, employee_get_parser,
+                                  employee_post_parser, employee_put_parser)
+from dmms.service.fields_check_utils import (all_parameters_is_filled,
+                                             item_exists, value_is_positive,
+                                             any_parameter_is_filled,
+                                             value_provided, not_wrong_url)
 
 
 class Departments(Resource):

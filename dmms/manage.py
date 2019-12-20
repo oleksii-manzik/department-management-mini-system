@@ -1,7 +1,7 @@
 from flask_script import Manager
 from flask_migrate import MigrateCommand
 
-from rest.app import app
+from dmms.rest.app import app
 
 manager = Manager(app)
 

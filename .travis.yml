@@ -3,28 +3,24 @@ language: python
 python:
     - 3.6
 
+before_install:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 install:
-    pip install --upgrade -r department_management_mini_system/requirements.txt
+    - pip install --upgrade -r dmms/requirements.txt
 
 services:
-    mysql
+    - mysql
 
 before_script:
-  - mysql -e 'CREATE USER 'manager_user'@'%' IDENTIFIED BY 'hard_password1234';'
-  - mysql -e 'GRANT ALL PRIVILEGES ON *.* TO 'manager_user'@'%';'
-  - mysql -e 'CREATE DATABASE company_db;'
-  - mysql -e 'CREATE DATABASE test_company_db;'
+  - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS company_db;'
+  - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS test_company_db;'
+  - mysql -u root -e "CREATE USER 'manager_user'@'%' IDENTIFIED BY 'hard_password1234';"
+  - mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'manager_user'@'%';"
 
-jobs:
-    include:
-        - language: python
-          python: 3.6
-          env:
-              - ENV='TEST'
-          script:
-              - python department_management_mini_system/tests/test_rest/test_rest.py
+
+env:
+  - ENV='TEST'
 
 script:
-    pylint *
-    gunicorn --bind localhost:5000 department_management_mini_system/wsgi:app_rest
-    gunicorn --bind localhost:5001 department_management_mini_system/wsgi:app_views
+    - python dmms/tests/test_rest/test_rest.py

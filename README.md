@@ -15,8 +15,7 @@ For Ubuntu run this commands:
        * CREATE DATABASE company_db;
        * CREATE DATABASE test_company_db;
 3. In repository:
-    * cd department_management_mini_system
     * pip install -r requirements.txt
-    * gunicorn --bind localhost:5000 wsgi:app_rest
-    * gunicorn --bind localhost:5001 wsgi:app_views
+    * gunicorn --bind localhost:5000 dmms.wsgi:app_rest
+    * gunicorn --bind localhost:5001 dmms.wsgi:app_views
 4. Go to localhost:5001 in your web browser and enjoy this project :)
