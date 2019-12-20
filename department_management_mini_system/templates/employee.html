@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>{{data['name']}} employee</title>
+{% endblock %}
+{% block main %}
+<br><br>
+<button type="submit" onclick="window.location.href ='{{url_for('employees.edit_employee', employee_id=data['id'])}}'">Edit</button>
+<button type="submit" onclick="reallyDelete()">Delete</button>
+<script>
+    function reallyDelete() {
+        if (confirm('Are you really want to delete this employee?')) {
+            window.location.href = '{{url_for('employees.delete_employee', employee_id=data['id'])}}'
+        }
+    }
+</script>
+{% for message in get_flashed_messages() %}
+    <p>{{message}}</p>
+{% endfor %}
+<h1>{{data['name']}} employee</h1>
+<p>Date of birth: {{data['date_of_birth']}}</p>
+<p>Department: {{data['department']}}</p>
+<p>Salary: {{data['salary']}} $</p>
+{% endblock %}
