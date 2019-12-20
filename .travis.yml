@@ -24,3 +24,6 @@ env:
 
 script:
     - python dmms/tests/test_rest/test_rest.py
+
+after_success:
+  - coveralls
