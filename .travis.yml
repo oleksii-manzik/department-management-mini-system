@@ -4,7 +4,7 @@ python:
     - 3.6
 
 install:
-    pip install requirements.txt
+    pip install --upgrade -r department_managment_mini_system/requirements.txt
 
 services:
     mysql
@@ -22,9 +22,9 @@ jobs:
           env:
               - ENV='TEST'
           script:
-              - python test/tests/test_rest.py
+              - python department_managment_mini_system/tests/test_rest/test_rest.py
 
 script:
     pylint *
-    gunicorn --bind localhost:5000 wsgi:app_rest
-    gunicorn --bind localhost:5001 wsgi:app_views
+    gunicorn --bind localhost:5000 department_managment_mini_system/wsgi:app_rest
+    gunicorn --bind localhost:5001 department_managment_mini_system/wsgi:app_views
