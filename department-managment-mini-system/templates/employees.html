@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>Employees</title>
+{% endblock %}
+{% block main %}
+<br><br>
+<a href="{{url_for('employees.add_employee')}}"><input type="submit" value="New employee"></a>
+<h1>Employees info</h1>
+<span>Find by date of birth</span>
+<form method="get">
+    <input type="date" name="date_of_birth_start" value="{{dates.get('start', '')}}">
+    <input type="date" name="date_of_birth_end" value="{{dates.get('end', '')}}">
+    <input type="submit" value="Search">
+</form>
+
+<br><br>
+    <table border="1" style="width:50%">
+        <tr>
+            <th>Employee name</th>
+            <th>Date of birth</th>
+            <th>Department</th>
+            <th>Salary</th>
+        </tr>
+        {% for values in data.values() %}
+        <tr>
+            <td><a href="{{values['link']}}">{{values['name']}}</a></td>
+            <td>{{values['date_of_birth']}}</td>
+            <td>{{values['department']}}</td>
+            <td>{{values['salary']}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
