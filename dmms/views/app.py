@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
-from views.blueprints.departments import departments_blueprint
-from views.blueprints.employees import employees_blueprint
+from dmms.views.blueprints.departments import departments_blueprint
+from dmms.views.blueprints.employees import employees_blueprint
 
 
 app = Flask(__name__, template_folder='../templates')

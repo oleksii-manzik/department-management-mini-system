@@ -2,9 +2,9 @@ import os
 from flask import Flask
 from flask_restful import Api
 
-from service.db import db, migrate
-from service.config import run_config
-from service.resources import Departments, Employees
+from dmms.service.db import db, migrate
+from dmms.service.config import run_config
+from dmms.service.resources import Departments, Employees
 
 MIGRATION_DIR = os.path.join('migrations')
 

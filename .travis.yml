@@ -4,7 +4,7 @@ python:
     - 3.6
 
 install:
-    - pip install --upgrade -r department_management_mini_system/requirements.txt
+    - pip install --upgrade -r dmms/requirements.txt
 
 services:
     - mysql
@@ -18,7 +18,6 @@ before_script:
 
 env:
   - ENV='TEST'
-  - TRAVIS_BUILD_DIR='department_management_mini_syste'
 
 script:
-    - python department_management_mini_system/tests/test_rest/test_rest.py
+    - python dmms/tests/test_rest/test_rest.py
