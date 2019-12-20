@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h1>Welcome to home page!</h1>
+    <p>What do you want to see?</p>
+    <ul>
+        <li><a href="{{url_for('departments.get_departments')}}">Departments</a></li>
+        <li><a href="{{url_for('employees.get_employees')}}">Employees</a></li>
+    </ul>
+{% endblock %}

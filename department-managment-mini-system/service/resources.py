@@ -1,11 +1,12 @@
 from flask_restful import Resource, marshal_with
 
 from models.model import DepartmentsModel, EmployeesModel
+from sqlalchemy.exc import IntegrityError
 from service.db import db
 from service.fields_structure import departments_structure, employees_structure
 from service.parsers import (department_get_parser, department_post_parser,
-                             department_put_parser, employer_get_parser,
-                             employer_post_parser, employer_put_parser)
+                             department_put_parser, employee_get_parser,
+                             employee_post_parser, employee_put_parser)
 from service.fields_check_utils import (all_parameters_is_filled,
                                         item_exists,
                                         value_is_positive,
@@ -16,16 +17,25 @@ from service.fields_check_utils import (all_parameters_is_filled,
 class Departments(Resource):
     @marshal_with(departments_structure)
     def get(self, department_id=None):
+        # check if user didn't use /departments/<department_id> link
+        # if used - invokes abort
         not_wrong_url(department_id)
         args = department_get_parser.parse_args(strict=True)
         if args.get('id'):
             return DepartmentsModel.query.filter(
                 DepartmentsModel.id.in_(args['id'])).all()
-        return DepartmentsModel.query.all()
+        if args.get('name'):
+            return DepartmentsModel.query.filter(
+                DepartmentsModel.name == args['name']).first()
+        return DepartmentsModel.query.all(), 200
 
     def post(self, department_id=None):
+        # check if user didn't use /departments/<department_id> link
+        # if used - invokes abort
         not_wrong_url(department_id)
         args = department_post_parser.parse_args(strict=True)
+        # check if user has passed all parameters
+        # if hasn't - invokes abort
         all_parameters_is_filled(args)
         department = DepartmentsModel(**args)
         db.session.add(department)
@@ -39,56 +49,88 @@ class Departments(Resource):
         any_parameter_is_filled(args)
         department = DepartmentsModel.query.filter_by(id=department_id)
         item_exists(department.first(), 'Department', department_id)
-        department.update(filter(lambda x: x is not None, args))
+        update_data = {k: v for k, v in args.items() if v}
+        department.update(update_data)
         db.session.commit()
-        return f'Department {department.name} with id {department.id} ' \
-               f'was updated with data {args}'
+        return f'Department {department_id} was updated ' \
+               f'with data {update_data}', 200
 
     def delete(self, department_id=None):
         value_provided(department_id, 'deleting')
         department = DepartmentsModel.query.filter_by(id=department_id)
         item_exists(department.first(), 'Department', department_id)
-        department.delete()
+        try:
+            department.delete()
+        except IntegrityError:
+            return "Department wasn't deleted. Please delete employees " \
+                   "from this department first", 500
         db.session.commit()
-        return f'Department {department_id} was successfully deleted'
+        return f'Department {department_id} was successfully deleted', 200
 
 
 class Employees(Resource):
-
     @marshal_with(employees_structure)
-    def get(self, employer_id=None):
-        not_wrong_url(employer_id)
-        args = employer_get_parser.parse_args(strict=True)
-        if args.get('id'):
-            return EmployeesModel.query.filter(
-                EmployeesModel.id.in_(args['id'])).all()
-        return EmployeesModel.query.all()
+    def get(self, employee_id=None):
+        # check if user didn't use /employee/<employee_id> link
+        # if used - invokes abort
+        not_wrong_url(employee_id)
+        args = employee_get_parser.parse_args(strict=True)
+        # construct id filter
+        if args['id']:
+            id_filter = EmployeesModel.id.in_(args['id'])
+        else:
+            id_filter = True
+        # construct date_of_birth_start filter
+        if args['date_of_birth_start']:
+            bd_start = args['date_of_birth_start']
+            bd_start_filter = EmployeesModel.date_of_birth >= bd_start
+        else:
+            bd_start_filter = True
+        # construct date_of_birth_end filter
+        if args['date_of_birth_end']:
+            bd_end = args['date_of_birth_end']
+            bd_end_filter = EmployeesModel.date_of_birth <= bd_end
+        else:
+            bd_end_filter = True
+        return EmployeesModel.query.filter(
+            id_filter, bd_start_filter, bd_end_filter).all(), 200
 
-    def post(self, employer_id=None):
-        not_wrong_url(employer_id)
-        args = employer_post_parser.parse_args(strict=True)
+    def post(self, employee_id=None):
+        # check if user didn't use /employees/<employee_id> link
+        # if used - invokes abort
+        not_wrong_url(employee_id)
+        args = employee_post_parser.parse_args(strict=True)
+        # check if user has passed all parameters
+        # if hasn't - invokes abort
         all_parameters_is_filled(args)
-        employer = EmployeesModel(**args)
-        db.session.add(employer)
+        # check if salary is positive number
+        # if not - invokes abort
+        value_is_positive(['salary'], args)
+        employee = EmployeesModel(**args)
+        db.session.add(employee)
         db.session.commit()
-        return f'New employer {employer.name} with id {employer.id} ' \
+        return f'New employee {employee.name} with id {employee.id} ' \
                f'was added', 201
 
-    def put(self, employer_id=None):
-        value_provided(employer_id, 'updating')
-        args = employer_put_parser.parse_args(strict=True)
+    def put(self, employee_id=None):
+        # check if user provided employee_id
+        value_provided(employee_id, 'updating')
+        args = employee_put_parser.parse_args(strict=True)
         any_parameter_is_filled(args)
-        employer = EmployeesModel.query.filter_by(id=employer_id)
-        item_exists(employer.first(), 'Employer', employer_id)
-        employer.update(filter(lambda x: x is not None, args))
+        value_is_positive(['salary'], args)
+        employee = EmployeesModel.query.filter_by(id=employee_id)
+        item_exists(employee.first(), 'Employee', employee_id)
+        update_data = {k: v for k, v in args.items() if v}
+        employee.update(update_data)
         db.session.commit()
-        return f'Employer {employer.name} with id {employer.id} ' \
-               f'was updated with data {args}'
+        return f'Employee {employee_id} was updated with ' \
+               f'data {update_data}', 200
 
-    def delete(self, employer_id=None):
-        value_provided(employer_id, 'deleting')
-        employer = EmployeesModel.query.filter_by(id=employer_id)
-        item_exists(employer.first(), 'Employer', employer_id)
-        employer.delete()
+    def delete(self, employee_id=None):
+        # check if user provided employee_id
+        value_provided(employee_id, 'deleting')
+        employee = EmployeesModel.query.filter_by(id=employee_id)
+        item_exists(employee.first(), 'Employee', employee_id)
+        employee.delete()
         db.session.commit()
-        return f'Department {employer_id} was successfully deleted'
+        return f'Employee {employee_id} was successfully deleted', 200

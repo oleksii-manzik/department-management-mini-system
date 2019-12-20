@@ -8,24 +8,18 @@ from service.resources import Departments, Employees
 
 MIGRATION_DIR = os.path.join('migrations')
 
+app = Flask(__name__)
+app.config.from_object(run_config())
+db.init_app(app)
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(run_config())
-    db.init_app(app)
+with app.app_context():
+    db.create_all()
 
-    with app.app_context():
-        db.create_all()
+migrate.init_app(app, db, directory=MIGRATION_DIR)
 
-    migrate.init_app(app, db, directory=MIGRATION_DIR)
-
-    api = Api(app)
-    api.add_resource(
-        Departments, '/departments', '/departments/<department_id>')
-    api.add_resource(
-        Employees, '/employees', '/employees/<employer_id>')
-    return app
-
+api = Api(app)
+api.add_resource(Departments, '/departments', '/departments/<department_id>')
+api.add_resource(Employees, '/employees', '/employees/<employee_id>')
 
 if __name__ == '__main__':
-    create_app().run()
+    app.run()

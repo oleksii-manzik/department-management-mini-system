@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>Departments</title>
+{% endblock %}
+{% block main %}
+<br><br>
+<a href="{{url_for('departments.add_department')}}"><input type="submit" value="New department"></a>
+<h1>Departments info</h1>
+    <table border="1" style="width:50%">
+        <tr>
+            <th>Departmant name</th>
+            <th>Average salary</th>
+        </tr>
+        {% for name, values in data.items() %}
+        <tr>
+            <td><a href="{{values['link']}}">{{name}}</a></td>
+            <td>{{values['avg_salary']}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

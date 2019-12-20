@@ -2,7 +2,8 @@ import os
 
 
 class Config:
-    DEBUG = True
+    DEBUG = False
+    SERVER_NAME = 'localhost:5000'
     MYSQL_USER = 'manager_user'
     MYSQL_PASSWORD = 'hard_password1234'
     MYSQL_HOST = 'localhost'
@@ -29,5 +30,4 @@ def run_config():
         return DevConfig
     elif env == 'TEST':
         return TestConfig
-    else:
-        return Config
+    return Config
