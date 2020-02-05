@@ -1,6 +1,6 @@
 # Department Management Mini System (DMMS)
 
-*DMMS is made for EPAM Phyton Course Graduation Work*
+*DMMS is made for EPAM Python Course Graduation Work*
 
 To run this application you need:
 1. git clone this repo
